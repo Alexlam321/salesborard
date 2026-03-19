@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+    <style>
+        :root {
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #0077ed;
+            --apple-gray: #86868b;
+            --apple-gray-light: #f5f5f7;
+            --apple-gray-border: #d2d2d7;
+            --apple-text: #1d1d1f;
+            --apple-text-secondary: #424245;
+            --apple-white: #ffffff;
+            --apple-bg: #fbfbfd;
+            --apple-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            --apple-shadow-lg: 0 12px 40px rgba(0,0,0,0.1);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --pv: #ff9500;
+            --dc: #5856d6;
+            --charging: #34c759;
+            --danger: #ff3b30;
+            --warning: #ff9500;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            font-size: 15px;
+            line-height: 1.4;
+            color: var(--apple-text);
+            background: var(--apple-bg);
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* ==================== Header ==================== */
+        header {
+            padding: 32px 0 24px;
+            background: var(--apple-white);
+            border-bottom: 1px solid var(--apple-gray-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.003em;
+        }
+
+        .header-left .subtitle {
+            font-size: 14px;
+            color: var(--apple-gray);
+            margin: 4px 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-primary { background: var(--apple-blue); color: white; }
+        .btn-primary:hover { background: var(--apple-blue-hover); transform: translateY(-1px); }
+        .btn-secondary { background: var(--apple-gray-light); color: var(--apple-text); }
+        .btn-secondary:hover { background: #e8e8ed; }
+        .btn-warning { background: var(--warning); color: var(--apple-text); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--charging); color: white; }
+        .btn-small { padding: 8px 14px; font-size: 13px; }
+        .btn-icon { padding: 8px; width: 36px; height: 36px; justify-content: center; }
+
+        .lang-toggle {
+            display: flex;
+            background: var(--apple-gray-light);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--apple-gray);
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--apple-white);
+            color: var(--apple-text);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        /* ==================== Filter Bar ==================== */
+        .filter-bar {
+            background: var(--apple-white);
+            border-radius: var(--radius-md);
+            padding: 16px 24px;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            box-shadow: var(--apple-shadow);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-item label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--apple-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .filter-item select {
+            padding: 8px 14px;
+            border: 1px solid var(--apple-gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--apple-white);
+            color: var(--apple-text);
+            min-width: 110px;
+            cursor: pointer;
+        }
+
+        .filter-item select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 6px;
+            background: var(--apple-gray-light);
+            padding: 4px;
+            border-radius: 8px;
+            margin-left: auto;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--apple-gray);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .view-btn.active {
+            background: var(--apple-white);
+            color: var(--apple-text);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        /* ==================== Summary Grid ==================== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: var(--apple-white);
+            border-radius: var(--radius-md);
+            padding: 18px 16px;
+            text-align: center;
+            box-shadow: var(--apple-shadow);
+            transition: all 0.2s;
+            border-top: 3px solid var(--apple-blue);
+        }
+
+        .summary-card:hover { 
+            transform: translateY(-3px);
+            box-shadow: var(--apple-shadow-lg);
+        }
+
+        .summary-card .icon { font-size: 24px; margin-bottom: 6px; }
+        .summary-card .label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--apple-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .summary-card .value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--apple-text);
+            letter-spacing: -0.004em;
+        }
+        .summary-card .value.positive { color: var(--charging); }
+        .summary-card .value.negative { color: var(--danger); }
+        .summary-card .value.warning { color: var(--warning); }
+
+        /* ==================== Main Grid ==================== */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .panel {
+            background: var(--apple-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--apple-shadow);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--apple-gray-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--apple-white), var(--apple-gray-light));
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-body { padding: 20px 24px; }
+
+        /* ==================== Industry Cards ==================== */
+        .industry-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--apple-gray-light);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--apple-gray);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--apple-white);
+            color: var(--apple-blue);
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .industry-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .industry-card {
+            background: var(--apple-gray-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .industry-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--apple-shadow);
+        }
+
+        .industry-card .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--apple-gray-border);
+        }
+
+        .industry-card .header.pv { color: var(--pv); }
+        .industry-card .header.dc { color: var(--dc); }
+        .industry-card .header.charging { color: var(--charging); }
+
+        .industry-card .header span { font-size: 24px; }
+        .industry-card .header strong { font-size: 16px; font-weight: 600; }
+
+        .industry-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .industry-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--apple-white);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .industry-stat label {
+            display: block;
+            font-size: 10px;
+            color: var(--apple-gray);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .industry-stat .value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .industry-stat .value.positive { color: var(--charging); }
+        .industry-stat .value.negative { color: var(--danger); }
+        .industry-stat .value.warning { color: var(--warning); }
+
+        .progress-bar {
+            background: var(--apple-gray-border);
+            border-radius: 4px;
+            height: 6px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-fill.low { background: var(--danger); }
+        .progress-fill.medium { background: var(--warning); }
+        .progress-fill.high { background: #ffcc00; }
+        .progress-fill.excellent { background: var(--charging); }
+
+        /* ==================== Trend Chart ==================== */
+        .trend-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 200px;
+            padding: 20px 12px;
+            background: linear-gradient(to bottom, var(--apple-gray-light), var(--apple-white));
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .trend-bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 60px;
+        }
+
+        .trend-bar {
+            width: 100%;
+            max-width: 40px;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s;
+            position: relative;
+            background: linear-gradient(to top, var(--apple-blue), #3291ff);
+        }
+
+        .trend-bar:hover {
+            opacity: 0.85;
+            transform: scaleX(1.1);
+        }
+
+        .trend-bar-value {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--apple-white);
+            padding: 3px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+
+        .trend-label {
+            font-size: 11px;
+            color: var(--apple-gray);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* ==================== Comparison Chart ==================== */
+        .comparison-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 220px;
+            padding: 20px 8px;
+            background: linear-gradient(to bottom, var(--apple-gray-light), var(--apple-white));
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+        }
+
+        .chart-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .chart-bars {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 160px;
+        }
+
+        .cbar {
+            width: 20px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .cbar:hover { opacity: 0.85; transform: scaleX(1.1); }
+        .cbar.pv { background: linear-gradient(to top, var(--pv), #ffb347); }
+        .cbar.dc { background: linear-gradient(to top, var(--dc), #7371e0); }
+        .cbar.charging { background: linear-gradient(to top, var(--charging), #4fd66d); }
+
+        .cbar-val {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--apple-white);
+            padding: 3px 6px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            white-space: nowrap;
+        }
+
+        .chart-label {
+            font-size: 11px;
+            color: var(--apple-gray);
+            font-weight: 500;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+        }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--apple-gray);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .legend-dot.pv { background: var(--pv); }
+        .legend-dot.dc { background: var(--dc); }
+        .legend-dot.charging { background: var(--charging); }
+
+        /* ==================== Monthly Grid ==================== */
+        .monthly-section {
+            margin-bottom: 24px;
+        }
+
+        .monthly-section:last-child { margin-bottom: 0; }
+
+        .monthly-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .monthly-header.pv { background: linear-gradient(135deg, var(--pv), #f57c00); }
+        .monthly-header.dc { background: linear-gradient(135deg, var(--dc), #3f51b5); }
+        .monthly-header.charging { background: linear-gradient(135deg, var(--charging), #2e7d32); }
+
+        .monthly-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .month-card {
+            background: var(--apple-gray-light);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .month-card:hover {
+            background: var(--apple-white);
+            box-shadow: var(--apple-shadow);
+            transform: translateY(-2px);
+        }
+
+        .month-card h5 {
+            margin: 0 0 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .q-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .month-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .month-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid var(--apple-gray-border);
+        }
+
+        .month-stat:last-child { border-bottom: none; }
+        .month-stat label { color: var(--apple-gray); }
+        .month-stat .val { font-weight: 600; }
+
+        /* ==================== Table with Sort/Filter ==================== */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--apple-gray-border);
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--apple-gray-light);
+            border-bottom: 1px solid var(--apple-gray-border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+        }
+
+        .table-search input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--apple-gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--apple-white);
+        }
+
+        .table-search input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .column-filter {
+            position: relative;
+        }
+
+        .column-filter select {
+            padding: 8px 28px 8px 12px;
+            border: 1px solid var(--apple-gray-border);
+            border-radius: 8px;
+            font-size: 13px;
+            background: var(--apple-white);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2386868b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .column-filter select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .column-filter.active select {
+            border-color: var(--apple-blue);
+            background-color: rgba(0,113,227,0.05);
+        }
+
+        .filter-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--apple-gray);
+            pointer-events: none;
+        }
+
+        .column-filter.active .filter-icon {
+            color: var(--apple-blue);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: linear-gradient(to bottom, var(--apple-gray-light), #e8e8ed);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--apple-gray-border);
+            white-space: nowrap;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--apple-gray);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background 0.2s;
+        }
+
+        th:hover { 
+            background: #d8d8dd; 
+        }
+
+        th.sorted {
+            background: #e8e8ed;
+            color: var(--apple-blue);
+        }
+
+        th .sort-icon {
+            display: inline-block;
+            margin-left: 6px;
+            opacity: 0.3;
+            font-size: 10px;
+        }
+
+        th.sorted .sort-icon {
+            opacity: 1;
+        }
+
+        th .sort-icon.asc::after { content: '▲'; }
+        th .sort-icon.desc::after { content: '▼'; }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover { 
+            background: var(--apple-gray-light); 
+        }
+
+        .editable {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: inline-block;
+            min-width: 60px;
+        }
+        .editable:hover { background: rgba(0,113,227,0.08); }
+        .editable input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--apple-gray-border);
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .editable input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .gap-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .gap-badge.warn { color: var(--danger); background: rgba(255,59,48,0.12); }
+        .gap-badge.ok { color: var(--charging); background: rgba(52,199,89,0.12); }
+        .gap-badge.warning { color: var(--warning); background: rgba(255,149,0,0.12); }
+
+        .gap-negative {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .action-btns { display: flex; gap: 6px; }
+
+        .table-info {
+            padding: 12px 20px;
+            background: var(--apple-gray-light);
+            border-top: 1px solid var(--apple-gray-border);
+            font-size: 12px;
+            color: var(--apple-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-filters {
+            color: var(--apple-blue);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-filters:hover {
+            text-decoration: underline;
+        }
+
+        /* ==================== File Input ==================== */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* ==================== Modal ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--apple-white);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--apple-shadow-lg);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--apple-gray-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { margin: 0; font-size: 18px; font-weight: 600; }
+        .modal-close {
+            background: none; border: none;
+            font-size: 24px; cursor: pointer;
+            color: var(--apple-gray);
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: var(--apple-gray-light); }
+
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 16px 24px 24px;
+            border-top: 1px solid var(--apple-gray-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--apple-text);
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--apple-gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        /* ==================== Notification ==================== */
+        .notification {
+            position: fixed;
+            top: 20px; right: 20px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: var(--charging); }
+        .notification.error { background: var(--danger); }
+        .notification.info { background: var(--apple-blue); }
+        .notification.warning { background: var(--warning); }
+
+        /* ==================== Screenshot Mode ==================== */
+        body.screenshot-mode .filter-bar,
+        body.screenshot-mode .header-right,
+        body.screenshot-mode .view-toggle,
+        body.screenshot-mode .btn:not(.btn-screenshot),
+        body.screenshot-mode .editable:hover,
+        body.screenshot-mode .action-btns,
+        body.screenshot-mode .table-controls {
+            display: none !important;
+        }
+        body.screenshot-mode .container {
+            max-width: 100%;
+            padding: 20px;
+        }
+        body.screenshot-mode .main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 1400px) {
+            .summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .main-grid { grid-template-columns: 1fr; }
+            .monthly-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .header-content { padding: 0 16px; flex-direction: column; gap: 12px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: center; flex-wrap: wrap; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .monthly-grid { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .industry-cards { grid-template-columns: 1fr; }
+            .table-controls { flex-direction: column; align-items: stretch; }
+            .table-search { max-width: 100%; }
+        }
+
+        @media print {
+            .filter-bar, .header-right, .view-toggle, .btn, .action-btns, .editable, .table-controls {
+                display: none !important;
+            }
+            body { background: white; }
+            .panel { box-shadow: none; border: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 data-i18n="title">Sales Dashboard</h1>
+                <p class="subtitle" data-i18n="subtitle">Smart PV · Data Center · Charging Network</p>
+            </div>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+                </div>
+                <button class="btn btn-success" onclick="toggleScreenshot()">📸 <span data-i18n="screenshot">Screenshot</span></button>
+                <button class="btn btn-primary" onclick="openAddModal()">+ <span data-i18n="add">Add</span></button>
+                <div class="file-input-wrapper">
+                    <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                        📥 <span data-i18n="import">Import</span>
+                    </button>
+                    <input type="file" id="fileInput" accept=".json,.csv" onchange="importData(this)">
+                </div>
+                <button class="btn btn-secondary" onclick="exportData()">📤 <span data-i18n="export">Export</span></button>
+                <button class="btn btn-warning" onclick="resetAllData()">🔄 <span data-i18n="reset">Reset</span></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-group">
+            <div class="filter-item">
+                <label data-i18n="year">Year</label>
+                <select id="yearFilter" onchange="applyFilter()">
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label data-i18n="quarter">Quarter</label>
+                <select id="quarterFilter" onchange="applyFilter()">
+                    <option value="all" data-i18n="all">All</option>
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label data-i18n="month">Month</label>
+                <select id="monthFilter" onchange="applyFilter()">
+                    <option value="all" data-i18n="all">All</option>
+                    <option value="1" data-i18n="jan">Jan</option>
+                    <option value="2" data-i18n="feb">Feb</option>
+                    <option value="3" data-i18n="mar">Mar</option>
+                    <option value="4" data-i18n="apr">Apr</option>
+                    <option value="5" data-i18n="may">May</option>
+                    <option value="6" data-i18n="jun">Jun</option>
+                    <option value="7" data-i18n="jul">Jul</option>
+                    <option value="8" data-i18n="aug">Aug</option>
+                    <option value="9" data-i18n="sep">Sep</option>
+                    <option value="10" data-i18n="oct">Oct</option>
+                    <option value="11" data-i18n="nov">Nov</option>
+                    <option value="12" data-i18n="dec">Dec</option>
+                </select>
+            </div>
+        </div>
+        <div class="view-toggle">
+            <button class="view-btn active" onclick="setView('all')" data-i18n="all">All</button>
+            <button class="view-btn" onclick="setView('monthly')" data-i18n="monthly">Monthly</button>
+            <button class="view-btn" onclick="setView('quarterly')" data-i18n="quarterly">Quarterly</button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="summary-card" style="border-top-color: var(--apple-blue)">
+            <div class="icon">📈</div>
+            <div class="label" data-i18n="forecast">Forecast</div>
+            <div class="value" id="totalPredict">0.00 M USD</div>
+        </div>
+        <div class="summary-card" style="border-top-color: var(--charging)">
+            <div class="icon">✅</div>
+            <div class="label" data-i18n="achieved">Achieved</div>
+            <div class="value" id="totalAchieved">0.00 M USD</div>
+        </div>
+        <div class="summary-card" style="border-top-color: var(--danger)">
+            <div class="icon">🎯</div>
+            <div class="label" data-i18n="gap">Gap</div>
+            <div class="value" id="totalGap">0.00 M USD</div>
+        </div>
+        <div class="summary-card" style="border-top-color: var(--warning)">
+            <div class="icon">🏆</div>
+            <div class="label" data-i18n="rate">Rate</div>
+            <div class="value" id="totalRate">0%</div>
+        </div>
+        <div class="summary-card" style="border-top-color: var(--dc)">
+            <div class="icon">📁</div>
+            <div class="label" data-i18n="projects">Projects</div>
+            <div class="value" id="totalProjects">0</div>
+        </div>
+        <div class="summary-card" style="border-top-color: var(--pv)">
+            <div class="icon">👤</div>
+            <div class="label" data-i18n="leads">Leads</div>
+            <div class="value" id="totalLeads">0</div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- Left Column -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Industry Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🏭 <span data-i18n="industries">Industries</span></h3>
+                    <div class="industry-tabs">
+                        <button class="tab active" onclick="switchIndustry('all', this)" data-i18n="all">All</button>
+                        <button class="tab" onclick="switchIndustry('智能光伏', this)">☀️ PV</button>
+                        <button class="tab" onclick="switchIndustry('数据中心', this)">🖥️ DC</button>
+                        <button class="tab" onclick="switchIndustry('充电网络', this)">⚡ CHG</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="industry-cards" id="industryCards"></div>
+                </div>
+            </div>
+
+            <!-- Project Table with Sort/Filter -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>📋 <span data-i18n="projects_detail">Project Details</span></h3>
+                </div>
+                <div class="panel-body" style="padding: 0;">
+                    <div class="table-controls">
+                        <div class="table-search">
+                            <span>🔍</span>
+                            <input type="text" id="tableSearch" placeholder="Search projects..." oninput="renderTable()">
+                        </div>
+                        <div class="table-filters">
+                            <div class="column-filter" id="filterLead">
+                                <select onchange="applyColumnFilter('lead', this.value)">
+                                    <option value="">All Leads</option>
+                                </select>
+                                <span class="filter-icon">🔽</span>
+                            </div>
+                            <div class="column-filter" id="filterIndustry">
+                                <select onchange="applyColumnFilter('industry', this.value)">
+                                    <option value="">All Industries</option>
+                                    <option value="智能光伏">Smart PV</option>
+                                    <option value="数据中心">Data Center</option>
+                                    <option value="充电网络">Charging</option>
+                                </select>
+                                <span class="filter-icon">🔽</span>
+                            </div>
+                            <div class="column-filter" id="filterStatus">
+                                <select onchange="applyColumnFilter('status', this.value)">
+                                    <option value="">All Status</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Not Started">Not Started</option>
+                                </select>
+                                <span class="filter-icon">🔽</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable('lead')" data-sort="lead">
+                                        <span data-i18n="lead">Lead</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('industry')" data-sort="industry">
+                                        <span data-i18n="industry">Industry</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('project')" data-sort="project">
+                                        <span data-i18n="project">Project</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('period')" data-sort="period">
+                                        <span data-i18n="period">Period</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('predict')" data-sort="predict">
+                                        <span data-i18n="forecast">Forecast</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('achieved')" data-sort="achieved">
+                                        <span data-i18n="achieved">Achieved</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('gap')" data-sort="gap">
+                                        <span data-i18n="gap">Gap</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('rate')" data-sort="rate">
+                                        <span data-i18n="rate">Rate</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th onclick="sortTable('status')" data-sort="status">
+                                        <span data-i18n="status">Status</span>
+                                        <span class="sort-icon"></span>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-info">
+                        <span id="tableCount">0 projects</span>
+                        <span class="clear-filters" onclick="clearAllFilters()" data-i18n="clear_filters">Clear all filters</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Trend Chart (12 months) -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>📊 <span data-i18n="trend">Trend (12 Months)</span></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="trend-chart" id="trendChart"></div>
+                </div>
+            </div>
+
+            <!-- Comparison Chart -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>📈 <span data-i18n="comparison">Comparison</span></h3>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="cmpDimension" onchange="renderComparison()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--apple-gray-border);font-size:12px;">
+                            <option value="monthly" data-i18n="monthly">Monthly</option>
+                            <option value="quarterly" data-i18n="quarterly">Quarterly</option>
+                        </select>
+                        <select id="cmpMetric" onchange="renderComparison()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--apple-gray-border);font-size:12px;">
+                            <option value="achieved" data-i18n="achieved">Achieved</option>
+                            <option value="predict" data-i18n="forecast">Forecast</option>
+                            <option value="rate" data-i18n="rate">Rate</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="comparison-chart" id="comparisonChart"></div>
+                    <div class="chart-legend">
+                        <div class="legend"><div class="legend-dot pv"></div>Smart PV</div>
+                        <div class="legend"><div class="legend-dot dc"></div>Data Center</div>
+                        <div class="legend"><div class="legend-dot charging"></div>Charging</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Breakdown by Industry -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>📅 <span data-i18n="monthly_breakdown">Monthly Breakdown</span></h3>
+                </div>
+                <div class="panel-body" id="monthlyByIndustry"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle" data-i18n="add_project">Add Project</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label data-i18n="lead">Project Lead *</label>
+                    <input type="text" id="fLead" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="industry">Industry *</label>
+                    <select id="fIndustry" required>
+                        <option value="">Select</option>
+                        <option value="智能光伏">Smart PV</option>
+                        <option value="数据中心">Data Center</option>
+                        <option value="充电网络">Charging Network</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label data-i18n="project">Project Name *</label>
+                    <input type="text" id="fName" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="status">Status *</label>
+                    <input type="text" id="fStatus" placeholder="e.g., In Progress" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label data-i18n="year">Year</label>
+                    <select id="fYear">
+                        <option value="2024">2024</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="month">Month</label>
+                    <select id="fMonth">
+                        <option value="1" data-i18n="jan">Jan</option>
+                        <option value="2" data-i18n="feb">Feb</option>
+                        <option value="3" data-i18n="mar">Mar</option>
+                        <option value="4" data-i18n="apr">Apr</option>
+                        <option value="5" data-i18n="may">May</option>
+                        <option value="6" data-i18n="jun">Jun</option>
+                        <option value="7" data-i18n="jul">Jul</option>
+                        <option value="8" data-i18n="aug">Aug</option>
+                        <option value="9" data-i18n="sep">Sep</option>
+                        <option value="10" data-i18n="oct">Oct</option>
+                        <option value="11" data-i18n="nov">Nov</option>
+                        <option value="12" data-i18n="dec">Dec</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label data-i18n="forecast">Forecast (M USD) *</label>
+                    <input type="number" id="fPredict" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="achieved">Achieved (M USD) *</label>
+                    <input type="number" id="fAchieved" step="0.01" min="0" required>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()" data-i18n="cancel">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProject()" data-i18n="save">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<script>
+    // Translations
+    const i18n = {
+        en: {
+            title: 'Sales Dashboard',
+            subtitle: 'Smart PV · Data Center · Charging Network',
+            screenshot: 'Screenshot',
+            add: 'Add',
+            import: 'Import',
+            export: 'Export',
+            reset: 'Reset',
+            year: 'Year',
+            quarter: 'Quarter',
+            month: 'Month',
+            all: 'All',
+            jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr',
+            may: 'May', jun: 'Jun', jul: 'Jul', aug: 'Aug',
+            sep: 'Sep', oct: 'Oct', nov: 'Nov', dec: 'Dec',
+            monthly: 'Monthly',
+            quarterly: 'Quarterly',
+            forecast: 'Forecast',
+            achieved: 'Achieved',
+            gap: 'Gap',
+            rate: 'Rate',
+            projects: 'Projects',
+            leads: 'Leads',
+            industries: 'Industries',
+            projects_detail: 'Project Details',
+            all_industries: 'All Industries',
+            all_leads: 'All Leads',
+            lead: 'Lead',
+            industry: 'Industry',
+            project: 'Project',
+            period: 'Period',
+            status: 'Status',
+            trend: 'Trend (12 Months)',
+            comparison: 'Comparison',
+            monthly_breakdown: 'Monthly Breakdown',
+            add_project: 'Add Project',
+            cancel: 'Cancel',
+            save: 'Save',
+            clear_filters: 'Clear all filters',
+            search_placeholder: 'Search projects...'
+        },
+        zh: {
+            title: '销售仪表板',
+            subtitle: '智能光伏 · 数据中心 · 充电网络',
+            screenshot: '截图模式',
+            add: '添加',
+            import: '导入',
+            export: '导出',
+            reset: '重置',
+            year: '年度',
+            quarter: '季度',
+            month: '月份',
+            all: '全部',
+            jan: '1 月', feb: '2 月', mar: '3 月', apr: '4 月',
+            may: '5 月', jun: '6 月', jul: '7 月', aug: '8 月',
+            sep: '9 月', oct: '10 月', nov: '11 月', dec: '12 月',
+            monthly: '月度',
+            quarterly: '季度',
+            forecast: '预测',
+            achieved: '达成',
+            gap: '差距',
+            rate: '达成率',
+            projects: '项目数',
+            leads: '负责人',
+            industries: '产业分析',
+            projects_detail: '项目明细',
+            all_industries: '全部产业',
+            all_leads: '全部负责人',
+            lead: '负责人',
+            industry: '产业',
+            project: '项目',
+            period: '时间',
+            status: '状态',
+            trend: '趋势（12 个月）',
+            comparison: '产业对比',
+            monthly_breakdown: '月度明细',
+            add_project: '添加项目',
+            cancel: '取消',
+            save: '保存',
+            clear_filters: '清除所有筛选',
+            search_placeholder: '搜索项目...'
+        }
+    };
+
+    let currentLang = 'en';
+    let projects = JSON.parse(localStorage.getItem('sales_v8')||'[]').map(p=>({...p,predict:+p.predict||0,achieved:+p.achieved||0,month:String(p.month),year:String(p.year)}));
+    let filter = {year:'2025',quarter:'all',month:'all'}, view='all', industryTab='all';
+    
+    // Table Sort/Filter State
+    let tableSort = { column: null, direction: 'asc' };
+    let columnFilters = { lead: '', industry: '', status: '' };
+    let searchQuery = '';
+
+    // Utils
+    const fmt = n => (parseFloat(n)||0).toFixed(2)+' M USD';
+    const monthName = m => currentLang==='en' ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1] : ['1 月','2 月','3 月','4 月','5 月','6 月','7 月','8 月','9 月','10 月','11 月','12 月'][m-1];
+    const quarter = m => m<=3?'Q1':m<=6?'Q2':m<=9?'Q3':'Q4';
+    const gapClass = g => g>0?'warn':g<0?'negative':'ok';
+    const progressClass = r => r<50?'low':r<80?'medium':r<100?'high':'excellent';
+    const indColor = i => i==='智能光伏'?'pv':i==='数据中心'?'dc':'charging';
+    const indIcon = i => i==='智能光伏'?'☀️':i==='数据中心'?'🖥️':'⚡';
+
+    function getFiltered(ind=null) {
+        return projects.filter(p => 
+            p.year===filter.year &&
+            (filter.quarter==='all'||quarter(+p.month)===filter.quarter) &&
+            (filter.month==='all'||p.month===filter.month) &&
+            (!ind||ind==='all'||p.industry===ind)
+        );
+    }
+
+    function save() { localStorage.setItem('sales_v8', JSON.stringify(projects)); }
+    
+    function notify(msg,type='info') {
+        const n = document.getElementById('notification');
+        n.textContent = msg; 
+        n.className = `notification ${type} show`;
+        setTimeout(()=>n.classList.remove('show'),2500);
+    }
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-btn').forEach((btn,i)=>{
+            btn.classList.toggle('active', (lang==='en' && i===0) || (lang==='zh' && i===1));
+        });
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if(i18n[lang][key]) el.textContent = i18n[lang][key];
+        });
+        document.getElementById('tableSearch').placeholder = i18n[lang].search_placeholder;
+        renderAll();
+    }
+
+    // ==================== Table Sort/Filter Functions ====================
+    
+    function sortTable(column) {
+        if(tableSort.column === column) {
+            tableSort.direction = tableSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            tableSort.column = column;
+            tableSort.direction = 'asc';
+        }
+        
+        // Update header visual
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.classList.remove('sorted');
+            th.querySelector('.sort-icon').className = 'sort-icon';
+        });
+        
+        const activeTh = document.querySelector(`th[data-sort="${column}"]`);
+        if(activeTh) {
+            activeTh.classList.add('sorted');
+            activeTh.querySelector('.sort-icon').className = `sort-icon ${tableSort.direction}`;
+        }
+        
+        renderTable();
+    }
+
+    function applyColumnFilter(column, value) {
+        columnFilters[column] = value;
+        const filterEl = document.getElementById(`filter${column.charAt(0).toUpperCase() + column.slice(1)}`);
+        if(filterEl) {
+            filterEl.classList.toggle('active', value !== '');
+        }
+        renderTable();
+    }
+
+    function clearAllFilters() {
+        columnFilters = { lead: '', industry: '', status: '' };
+        searchQuery = '';
+        tableSort = { column: null, direction: 'asc' };
+        
+        document.querySelectorAll('.column-filter').forEach(el => {
+            el.classList.remove('active');
+            const select = el.querySelector('select');
+            if(select) select.value = '';
+        });
+        
+        document.getElementById('tableSearch').value = '';
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.classList.remove('sorted');
+            th.querySelector('.sort-icon').className = 'sort-icon';
+        });
+        
+        renderTable();
+    }
+
+    function getTableData() {
+        let data = getFiltered();
+        
+        // Apply column filters
+        if(columnFilters.lead) data = data.filter(p => p.lead === columnFilters.lead);
+        if(columnFilters.industry) data = data.filter(p => p.industry === columnFilters.industry);
+        if(columnFilters.status) data = data.filter(p => p.progress === columnFilters.status);
+        
+        // Apply search
+        if(searchQuery) {
+            const q = searchQuery.toLowerCase();
+            data = data.filter(p => 
+                p.lead.toLowerCase().includes(q) ||
+                p.industry.toLowerCase().includes(q) ||
+                p.name.toLowerCase().includes(q) ||
+                p.progress.toLowerCase().includes(q)
+            );
+        }
+        
+        // Apply sorting
+        if(tableSort.column) {
+            data.sort((a, b) => {
+                let valA, valB;
+                
+                switch(tableSort.column) {
+                    case 'lead': valA = a.lead; valB = b.lead; break;
+                    case 'industry': valA = a.industry; valB = b.industry; break;
+                    case 'project': valA = a.name; valB = b.name; break;
+                    case 'period': valA = `${a.year}-${a.month}`; valB = `${b.year}-${b.month}`; break;
+                    case 'predict': valA = a.predict; valB = b.predict; break;
+                    case 'achieved': valA = a.achieved; valB = b.achieved; break;
+                    case 'gap': valA = a.predict - a.achieved; valB = b.predict - b.achieved; break;
+                    case 'rate': valA = a.predict>0?a.achieved/a.predict:0; valB = b.predict>0?b.achieved/b.predict:0; break;
+                    case 'status': valA = a.progress; valB = b.progress; break;
+                    default: valA = 0; valB = 0;
+                }
+                
+                if(typeof valA === 'string') {
+                    return tableSort.direction === 'asc' 
+                        ? valA.localeCompare(valB) 
+                        : valB.localeCompare(valA);
+                } else {
+                    return tableSort.direction === 'asc' ? valA - valB : valB - valA;
+                }
+            });
+        }
+        
+        return data;
+    }
+
+    // ==================== Render Functions ====================
+    
+    function renderAll() {
+        renderSummary(); 
+        renderIndustries(); 
+        renderComparison(); 
+        renderTrend(); 
+        renderMonthly(); 
+        renderTable(); 
+        updateColumnFilters();
+    }
+
+    function renderSummary() {
+        const d = getFiltered();
+        const pred = d.reduce((s,p)=>s+(+p.predict||0),0), ach = d.reduce((s,p)=>s+(+p.achieved||0),0);
+        const gap = pred-ach, rate = pred>0?ach/pred*100:0;
+        document.getElementById('totalPredict').textContent = fmt(pred);
+        document.getElementById('totalAchieved').textContent = fmt(ach);
+        const gEl = document.getElementById('totalGap');
+        gEl.textContent = (gap<0?'-':'') + fmt(Math.abs(gap));
+        gEl.className = 'value ' + (gap<0?'negative':gap>0?'warning':'positive');
+        document.getElementById('totalRate').textContent = rate.toFixed(1)+'%';
+        document.getElementById('totalProjects').textContent = d.length;
+        document.getElementById('totalLeads').textContent = new Set(d.map(p=>p.lead)).size;
+    }
+
+    function renderIndustries() {
+        const inds = ['智能光伏','数据中心','充电网络'];
+        const container = document.getElementById('industryCards');
+        const filtered = getFiltered(industryTab==='all'?null:industryTab);
+        
+        let html = '';
+        inds.filter(i=>industryTab==='all'||i===industryTab).forEach(ind => {
+            const d = filtered.filter(p=>p.industry===ind);
+            const pred = d.reduce((s,p)=>s+(+p.predict||0),0), ach = d.reduce((s,p)=>s+(+p.achieved||0),0);
+            const gap = pred-ach, rate = pred>0?ach/pred*100:0;
+            html += `
+                <div class="industry-card">
+                    <div class="header ${indColor(ind)}"><span>${indIcon(ind)}</span><strong>${ind}</strong></div>
+                    <div class="industry-stats">
+                        <div class="industry-stat"><label>${currentLang==='en'?'Forecast':'预测'}</label><div class="value">${fmt(pred)}</div></div>
+                        <div class="industry-stat"><label>${currentLang==='en'?'Achieved':'达成'}</label><div class="value">${fmt(ach)}</div></div>
+                        <div class="industry-stat"><label>${currentLang==='en'?'Gap':'差距'}</label><div class="value ${gapClass(gap)}">${gap<0?'-':''}${fmt(Math.abs(gap))}</div></div>
+                        <div class="industry-stat"><label>${currentLang==='en'?'Rate':'达成率'}</label><div class="value ${rate>=100?'positive':rate>=80?'':rate>=50?'warning':'negative'}">${rate.toFixed(1)}%</div></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--apple-gray);margin-bottom:4px">${currentLang==='en'?'Progress':'进度'}</div>
+                    <div class="progress-bar"><div class="progress-fill ${progressClass(rate)}" style="width:${Math.min(rate,100)}%"></div></div>
+                    <div style="margin-top:8px;font-size:11px;color:var(--apple-gray)">${currentLang==='en'?'Projects':'项目数'}: <strong>${d.length}</strong></div>
+                </div>
+            `;
+        });
+        container.innerHTML = html || '<div style="color:var(--apple-gray);text-align:center;padding:20px;">No data</div>';
+    }
+
+    function renderComparison() {
+        const dim = document.getElementById('cmpDimension').value;
+        const metric = document.getElementById('cmpMetric').value;
+        const inds = ['智能光伏','数据中心','充电网络'];
+        const container = document.getElementById('comparisonChart');
+        
+        let data = [];
+        if(dim==='monthly') {
+            for(let m=1;m<=12;m++) {
+                const pt = {label:monthName(m),values:{}};
+                inds.forEach(ind => {
+                    const d = getFiltered(ind).filter(p=>+p.month===m);
+                    pt.values[ind] = calcMetric(d, metric);
+                });
+                data.push(pt);
+            }
+        } else {
+            ['Q1','Q2','Q3','Q4'].forEach((q,idx) => {
+                const [s,e] = [idx*3+1, idx*3+3];
+                const pt = {label:q,values:{}};
+                inds.forEach(ind => {
+                    const d = getFiltered(ind).filter(p=>{const m=+p.month;return m>=s&&m<=e;});
+                    pt.values[ind] = calcMetric(d, metric);
+                });
+                data.push(pt);
+            });
+        }
+
+        const max = Math.max(1,...data.flatMap(d=>Object.values(d.values).map(v=>Math.abs(v||0))));
+        
+        container.innerHTML = data.map(pt => `
+            <div class="chart-group">
+                <div class="chart-bars">
+                    ${inds.map(ind => {
+                        const v = pt.values[ind]||0, h = Math.abs(v)/max*130;
+                        const label = metric==='rate'?v.toFixed(0)+'%':fmt(v);
+                        return `<div class="cbar ${indColor(ind)}" style="height:${Math.max(h,3)}px" title="${ind}: ${label}"><div class="cbar-val">${metric==='rate'?v.toFixed(0):v.toFixed(1)}</div></div>`;
+                    }).join('')}
+                </div>
+                <div class="chart-label">${pt.label}</div>
+            </div>
+        `).join('');
+    }
+
+    function renderTrend() {
+        const d = getFiltered();
+        const container = document.getElementById('trendChart');
+        
+        let pts = [];
+        for(let m=1;m<=12;m++) {
+            const ach = d.filter(p=>+p.month===m).reduce((s,p)=>s+(+p.achieved||0),0);
+            pts.push({label:monthName(m),value:ach});
+        }
+        
+        const max = Math.max(1,...pts.map(p=>p.value));
+        container.innerHTML = pts.map(pt => {
+            const h = pt.value/max*160;
+            return `<div class="trend-bar-wrapper">
+                <div class="trend-bar" style="height:${Math.max(h,3)}px">
+                    <div class="trend-bar-value">${pt.value.toFixed(1)}</div>
+                </div>
+                <div class="trend-label">${pt.label}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function calcMetric(data, metric) {
+        if(metric==='achieved') return data.reduce((s,p)=>s+(+p.achieved||0),0);
+        if(metric==='predict') return data.reduce((s,p)=>s+(+p.predict||0),0);
+        if(metric==='rate') {
+            const pred = data.reduce((s,p)=>s+(+p.predict||0),0), ach = data.reduce((s,p)=>s+(+p.achieved||0),0);
+            return pred>0?ach/pred*100:0;
+        }
+        const pred = data.reduce((s,p)=>s+(+p.predict||0),0), ach = data.reduce((s,p)=>s+(+p.achieved||0),0);
+        return pred-ach;
+    }
+
+    function renderMonthly() {
+        const container = document.getElementById('monthlyByIndustry');
+        const inds = ['智能光伏','数据中心','充电网络'];
+        const filtered = getFiltered();
+        
+        let html = '';
+        inds.forEach(ind => {
+            const d = filtered.filter(p=>p.industry===ind);
+            html += `<div class="monthly-section">
+                <div class="monthly-header ${indColor(ind)}">${indIcon(ind)} ${ind}</div>
+                <div class="monthly-grid">`;
+            
+            if(view==='quarterly') {
+                ['Q1','Q2','Q3','Q4'].forEach((q,idx) => {
+                    const [s,e] = [idx*3+1, idx*3+3];
+                    const md = d.filter(p=>{const m=+p.month;return m>=s&&m<=e;});
+                    const pred = md.reduce((s,p)=>s+(+p.predict||0),0), ach = md.reduce((s,p)=>s+(+p.achieved||0),0);
+                    const rate = pred>0?ach/pred*100:0;
+                    html += `
+                        <div class="month-card">
+                            <h5><span>${q}</span><span class="q-badge">${q}</span></h5>
+                            <div class="month-stats">
+                                <div class="month-stat"><label>${currentLang==='en'?'Pred':'预测'}</label><span class="val">${fmt(pred)}</span></div>
+                                <div class="month-stat"><label>${currentLang==='en'?'Ach':'达成'}</label><span class="val">${fmt(ach)}</span></div>
+                                <div class="month-stat"><label>${currentLang==='en'?'Rate':'达成率'}</label><span class="val">${rate.toFixed(0)}%</span></div>
+                                <div class="month-stat"><label>#</label><span class="val">${md.length}</span></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                for(let m=1;m<=12;m++) {
+                    const md = d.filter(p=>+p.month===m);
+                    const pred = md.reduce((s,p)=>s+(+p.predict||0),0), ach = md.reduce((s,p)=>s+(+p.achieved||0),0);
+                    const rate = pred>0?ach/pred*100:0;
+                    html += `
+                        <div class="month-card">
+                            <h5><span>${monthName(m)}</span><span class="q-badge">${quarter(m)}</span></h5>
+                            <div class="month-stats">
+                                <div class="month-stat"><label>${currentLang==='en'?'Pred':'预测'}</label><span class="val">${fmt(pred)}</span></div>
+                                <div class="month-stat"><label>${currentLang==='en'?'Ach':'达成'}</label><span class="val">${fmt(ach)}</span></div>
+                                <div class="month-stat"><label>${currentLang==='en'?'Rate':'达成率'}</label><span class="val">${rate.toFixed(0)}%</span></div>
+                                <div class="month-stat"><label>#</label><span class="val">${md.length}</span></div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            html += '</div></div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function updateColumnFilters() {
+        // Update Lead filter options
+        const leads = [...new Set(getFiltered().map(p=>p.lead))].sort();
+        const leadSelect = document.querySelector('#filterLead select');
+        if(leadSelect) {
+            const cur = leadSelect.value;
+            leadSelect.innerHTML = '<option value="">'+(currentLang==='en'?'All Leads':'全部负责人')+'</option>' + 
+                leads.map(l=>`<option value="${l}">${l}</option>`).join('');
+            leadSelect.value = cur;
+        }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        searchQuery = document.getElementById('tableSearch').value;
+        
+        const data = getTableData();
+        
+        document.getElementById('tableCount').textContent = `${data.length} ${currentLang==='en'?'projects':'个项目'}`;
+        
+        if(!data.length) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--apple-gray)">'+
+                (currentLang==='en'?'No projects found':'暂无项目')+'</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = data.map(p => {
+            const pred = +p.predict||0, ach = +p.achieved||0, gap = pred-ach;
+            const rate = pred>0?ach/pred*100:0;
+            const gapSign = gap<0?'↓':gap>0?'↑':'=';
+            return `
+                <tr>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','lead')">${p.lead}</div></td>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','industry')">${p.industry}</div></td>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','project')">${p.name}</div></td>
+                    <td>${monthName(+p.month)} ${p.year}<br><span class="q-badge">${quarter(+p.month)}</span></td>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','predict')">${fmt(pred)}</div></td>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','achieved')">${fmt(ach)}</div></td>
+                    <td><span class="gap-badge ${gapClass(gap)}">${gapSign} ${gap<0?'-':''}${fmt(Math.abs(gap))}</span></td>
+                    <td style="font-weight:600;color:${rate>=100?'var(--charging)':rate>=80?'#ffcc00':rate>=50?'var(--warning)':'var(--danger)'}">${rate.toFixed(0)}%</td>
+                    <td><div class="editable" onclick="editCell(this,'${p.id}','progress')">${p.progress}</div></td>
+                    <td class="action-btns">
+                        <button class="btn btn-warning btn-small" onclick="openEdit('${p.id}')">✏️</button>
+                        <button class="btn btn-danger btn-small" onclick="delProject('${p.id}')">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ==================== Interactions ====================
+    
+    function applyFilter() {
+        filter.year = document.getElementById('yearFilter').value;
+        filter.quarter = document.getElementById('quarterFilter').value;
+        filter.month = document.getElementById('monthFilter').value;
+        if(filter.quarter!=='all') document.getElementById('monthFilter').value='all', filter.month='all';
+        renderAll();
+    }
+
+    function setView(v) {
+        view = v;
+        document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+        event.target.classList.add('active');
+        renderAll();
+    }
+
+    function switchIndustry(ind, btn) {
+        industryTab = ind;
+        document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderIndustries();
+    }
+
+    function editCell(el, id, field) {
+        const p = projects.find(x=>x.id==id);
+        if(!p) return;
+        const input = document.createElement('input');
+        input.type = ['predict','achieved'].includes(field)?'number':'text';
+        if(['predict','achieved'].includes(field)) { input.step='0.01'; input.min='0'; }
+        input.value = p[field];
+        el.innerHTML = ''; el.appendChild(input); input.focus(); input.select();
+        
+        const save = () => {
+            let v = input.value.trim();
+            if(['predict','achieved'].includes(field)) v = +v||0;
+            p[field] = v; save(); renderAll(); notify(currentLang==='en'?'Saved':'已保存','success');
+        };
+        input.onblur = save;
+        input.onkeypress = e => e.key==='Enter'&&save();
+        input.onkeydown = e => e.key==='Escape'&&renderTable();
+    }
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = currentLang==='en'?'Add Project':'添加项目';
+        document.getElementById('editId').value = '';
+        ['fLead','fIndustry','fName','fStatus','fPredict','fAchieved'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('fYear').value = filter.year;
+        document.getElementById('fMonth').value = new Date().getMonth()+1;
+        document.getElementById('modal').classList.add('active');
+    }
+
+    function openEdit(id) {
+        const p = projects.find(x=>x.id==id);
+        if(!p) return;
+        document.getElementById('modalTitle').textContent = currentLang==='en'?'Edit Project':'编辑项目';
+        document.getElementById('editId').value = p.id;
+        document.getElementById('fLead').value = p.lead;
+        document.getElementById('fIndustry').value = p.industry;
+        document.getElementById('fName').value = p.name;
+        document.getElementById('fStatus').value = p.progress;
+        document.getElementById('fYear').value = p.year;
+        document.getElementById('fMonth').value = p.month;
+        document.getElementById('fPredict').value = p.predict;
+        document.getElementById('fAchieved').value = p.achieved;
+        document.getElementById('modal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+    function saveProject() {
+        const id = document.getElementById('editId').value;
+        const data = {
+            lead: document.getElementById('fLead').value.trim(),
+            industry: document.getElementById('fIndustry').value,
+            name: document.getElementById('fName').value.trim(),
+            progress: document.getElementById('fStatus').value.trim(),
+            year: document.getElementById('fYear').value,
+            month: document.getElementById('fMonth').value,
+            predict: +document.getElementById('fPredict').value||0,
+            achieved: +document.getElementById('fAchieved').value||0
+        };
+        if(!data.lead||!data.industry||!data.name||!data.progress) { 
+            notify(currentLang==='en'?'Fill required fields':'请填写必填字段','error'); 
+            return; 
+        }
+        
+        if(!id) { 
+            data.id = Date.now().toString(); 
+            projects.push(data); 
+            notify(currentLang==='en'?'Added':'已添加','success'); 
+        } else { 
+            const i = projects.findIndex(p=>p.id==id); 
+            if(i>=0) projects[i]={...projects[i],...data}; 
+            notify(currentLang==='en'?'Updated':'已更新','success'); 
+        }
+        
+        save(); renderAll(); closeModal();
+    }
+
+    function delProject(id) {
+        if(confirm(currentLang==='en'?'Delete?':'删除?')) { 
+            projects = projects.filter(p=>p.id!=id); 
+            save(); 
+            renderAll(); 
+            notify(currentLang==='en'?'Deleted':'已删除','info'); 
+        }
+    }
+
+    function toggleScreenshot() {
+        document.body.classList.toggle('screenshot-mode');
+        notify(document.body.classList.contains('screenshot-mode')?
+            (currentLang==='en'?'Screenshot mode ON':'截图模式开启'):
+            (currentLang==='en'?'Screenshot mode OFF':'截图模式关闭'),'info');
+    }
+
+    function exportData() {
+        const format = prompt(currentLang==='en'?'Export format (json/csv):':'导出格式 (json/csv):','json')||'json';
+        
+        if(format.toLowerCase()==='csv') {
+            const headers = ['Lead','Industry','Project','Year','Month','Forecast','Achieved','Gap','Rate','Status'];
+            const rows = projects.map(p => {
+                const gap = p.predict - p.achieved;
+                const rate = p.predict>0?(p.achieved/p.predict*100):0;
+                return [p.lead,p.industry,p.name,p.year,p.month,p.predict,p.achieved,gap,rate.toFixed(2),p.progress].join(',');
+            });
+            const csv = [headers.join(','),...rows].join('\n');
+            const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob);
+            a.download = `SalesDashboard_${new Date().toISOString().split('T')[0]}.csv`; 
+            a.click();
+            notify(currentLang==='en'?'CSV exported':'CSV 已导出','success');
+        } else {
+            const blob = new Blob([JSON.stringify({projects,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob);
+            a.download = `SalesDashboard_${new Date().toISOString().split('T')[0]}.json`; 
+            a.click();
+            notify(currentLang==='en'?'JSON exported':'JSON 已导出','success');
+        }
+    }
+
+    function importData(input) {
+        const file = input.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                if(file.name.endsWith('.json')) {
+                    const data = JSON.parse(e.target.result);
+                    if(data.projects) {
+                        projects = data.projects.map(p=>({...p,predict:+p.predict||0,achieved:+p.achieved||0,month:String(p.month),year:String(p.year)}));
+                        save();
+                        renderAll();
+                        notify(currentLang==='en'?'Data imported':'数据已导入','success');
+                    }
+                } else if(file.name.endsWith('.csv')) {
+                    const lines = e.target.result.split('\n');
+                    const headers = lines[0].split(',');
+                    const newProjects = [];
+                    for(let i=1;i<lines.length;i++) {
+                        if(!lines[i].trim()) continue;
+                        const values = lines[i].split(',');
+                        if(values.length>=8) {
+                            newProjects.push({
+                                id: Date.now().toString()+i,
+                                lead: values[0],
+                                industry: values[1],
+                                name: values[2],
+                                year: values[3],
+                                month: values[4],
+                                predict: +values[5]||0,
+                                achieved: +values[6]||0,
+                                progress: values[9]||'In Progress'
+                            });
+                        }
+                    }
+                    if(confirm(currentLang==='en'?'Import '+newProjects.length+' projects?':'导入'+newProjects.length+'个项目？')) {
+                        projects = [...projects, ...newProjects];
+                        save();
+                        renderAll();
+                        notify(currentLang==='en'?'CSV imported':'CSV 已导入','success');
+                    }
+                }
+            } catch(err) {
+                notify(currentLang==='en'?'Import failed':'导入失败','error');
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+        input.value = '';
+    }
+
+    function resetAllData() {
+        if(confirm(currentLang==='en'?'⚠️ Delete all data?':'⚠️ 删除所有数据?')&&
+           confirm(currentLang==='en'?'Confirm?':'确认?')) {
+            projects = []; 
+            save(); 
+            renderAll(); 
+            notify(currentLang==='en'?'Reset':'已重置','info');
+        }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', renderAll);
+    document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+</script>
+
+</body>
+</html>
